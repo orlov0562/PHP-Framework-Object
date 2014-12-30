@@ -1,8 +1,19 @@
 <?php
 
-    class Object {
+    class DataObject {
+        private $data = array();
 
-        protected $data = array();
+        public function loadData(array $data) {
+            $this->data = $data;
+        }
+        
+        public function appendData(array $data) {
+            $this->data = array_merge($this->data, $data);
+        }
+
+        public function getData() {
+            return $this->data;
+        }
 
         public function __call($name, array $arguments)
         {
@@ -39,8 +50,11 @@
             return substr($name, 0, 3); 
         }
         
-        private function _getVarName($name) { 
-            return substr($name, 3); 
+        private function _getVarName($name) {
+            $varName = substr($name, 3);
+            $varName = preg_replace('~([a-z0-9])([A-Z])~', '$1_$2', $varName);
+            $varName = strtolower($varName);
+            return $varName; 
         }
         
         private function _get($name, array $arguments) {
@@ -61,14 +75,6 @@
         private function _uns($name) {
             $varName = $this->_getVarName($name);
             if (isset($this->data[$varName])) unset($this->data[$varName]);
-        }
-        
-        public function loadData(array $data) {
-            $this->data = $data;
-        }
-        
-        public function appendData(array $data) {
-            $this->data = array_merge($this->data, $data);
         }
         
     }
